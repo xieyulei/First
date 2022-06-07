@@ -17,3 +17,63 @@
     max:返回两者之间最大值
     is：相当于java中的instanceOf关键字，判断类型
     for循环：until升序，左闭右开，downTo降序
+
+    listOf:创建不可变有序集合
+    mutableListOf:创建可变有序集合,示例：val list = mutableListOf("A","B","C")
+    setOf:创建不可变无序集合
+    mutableSetOf:创建可变无序集合,示例：val list = mutableSetOf("A","B","C")
+    mapOf:创建不可变键值对集合
+    mutableMapOf:创建可变键值对集合,示例：val maps = mutableMapOf("A","B","C")
+
+    maxBy:是一个普通函数，接收的是Lambda类型的参数，根据传入的条件来遍历集合，从而找到该条件下的最大值。
+    map: 集合中的map函数，用于将集合中的每个元素都映射成一个另外的值，映射的规则在Lambda表达式中指定，最终生成一个新的集合。
+        示例(将集合中所有的元素都变为大写)：val newList = list.map{it.toUpperCase()}
+    filter:用于过滤集合中的数据，可单独使用，也可以配合map使用
+        示例(过滤机集合中元素长度大于5的数据，并将其全部转为大写)：val newList = list.filter{ it.length > 5 }.map{ it.toUpperCase()}
+    any:用于判断集合中是否至少存在一个元素满足指定条件
+    all：用于判断集合中是否所有元素都满足指定条件
+
+4.面向对象的基本思想
+    基本思想：通过对类的封装，在合适的时机创建该类的对象，然后调用对象中的字段和函数来满足实际编程的需求
+    特性：例如封装、继承、多态等
+    基本用法：先将事物封装成具体的类，然后将事物所拥有的属性和能力分别定义成类中的字段和函数，
+            接下来对类进行实例化，再根据具体的编程需求调用类中的字段和方法。
+
+5.关键字
+    open:用来修改类，表示当前类可被继承
+    data:表明当前类是数据类(省略了equals、hashCode、toString方法)
+    object:声明单例类，例如：object SingleTon {}
+
+6.访问权限修饰符
+    public:对所有类可见，kotlin默认修饰符
+    private:对当前类内部可见
+    protected:对当前类和子类可见
+    internal:只对同一模块中的类可见（kotlin特有）
+
+7.List和Set的区别
+    List可以允许重复的对象，Set不允许有重复的对象
+    List可以插入多个null元素，而Set只允许插入一个null元素
+    List是一个有序的容器，保持了每个元素的插入顺序，输出的顺序就是输入的顺序；Set是无序容器，无法保证每个元素的存储顺序
+
+    总而言之：List和Set的最大区别就在于集合的元素是否有序
+
+8.判空操作符
+    ?. --->当对象不为空时，正常调用对象相应的方法，对象为空时什么都不做
+    ?: --->这个操作符，左右两边都接收一个表达式，如果左边表达式的结果不为空就返回左边表达式的结果，否则就返回右边表达式的结果
+        示例1：val name = a?:b
+        示例2：fun getTextLength(text:String?) = text?.length?:0
+    !! --->非空断言操作符，表示确信这个对象不会为空，无需做空指针检查，如果为空则，直接程序抛出空指针异常
+    ?.let--->表示对象为空时，什么都不做，对象不为空时就调用let函数，而let函数会将对象本身传递到let函数之中去，这样保证了let函数中对象不为空
+
+9.字符串内嵌表达式、函数的参数默认值、具名函数
+    9.1 字符串内嵌表达式:省去了频繁的拼接字符串的麻烦，示例："Hello,${student.name}"
+    9.2 函数的参数默认值:可以用来替代次构造函数，也可以在定义函数的时候给任意参数设定一个默认值，当调用参数时，
+            不会强制要求调用方为此参数传值，没有传值的情况下，会自动使用参数的默认值。
+            例如：
+                方法：fun printParams(num:Int,str:String="hello"){ println("num is $num , str is $str") }
+                调用方法：printParams(100)
+    9.3 具名函数：传参时以键值对的方式传递
+            示例：
+                方法：fun printParams(num:Int = 0,str:String="hello"){ println("num is $num , str is $str") }
+                调用方法：printParams(str = "kotlin")
+
