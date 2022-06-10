@@ -1,0 +1,149 @@
+1.Log Level
+    v: verbose, 最低等级最低的，打印琐碎、意义最小的日志
+    d: debug，打印调试信息
+    i: info，打印比较重要的信息
+    w: warn，打印警告信息(提示程序潜在风险、最好修复一下这些警告的地方)
+    e: error，打印程序中的错误信息
+    使用范例：Log.e(TAG,"Error info!!!")
+
+2.弃用println使用Log的原因：
+    开关不可控制
+    不能添加日志标签
+    日志没有等级区分
+    Log可配合Studio的Logcat工具进行日志的过滤，还支持正则表达式过滤
+
+3.认识编程语言：编译型语言和解释型语言
+    编程语言大概分为两种：编译型语言和解释型语言
+    编译型语言特点：
+        编译器会将我们编写的源代码一次性地编译成计算机可识别的二进制文件，然后计算机直接执行，例如C和C++
+
+    解释型语言特点：它有一个解释器，在程序运行时，解释器会一行行读取我们编写的源代码，然后实时地将这些源代码解释成计算机可识别的二进制数据后再执行，
+        因此解释型语言通常效率会差一些，例如Python和JavaScript
+
+    Java属于解释型语言：原因在于java代码确实是要先编译再运行的，但是java代码编译后生成的并不是计算机可识别的二进制文件，而是一种特殊的class文件，
+        这种class文件只有java虚拟机才能识别，而这个java虚拟机担当的就是解释器的角色，它会在程序运行时将编译后的class文件解释成计算机可识别的二进制数据
+        后再执行，因此，准确来讲，java属于解释型语言。
+
+4.四大组件
+    Activity：是一种包含用户界面的组件，主要用于和用户进行交互。
+
+5.Activity的状态、生命周期、生存期、跳转、数据传递、返回栈、数据被回收、启动模式、退出
+    状态：每个Activity在生命周期中最多可能有4种状态
+        1)运行状态:Activity位于返回栈的栈顶，系统最不愿意回收这种状态下的Activity,因为用户体验很差
+        2)暂停状态：Activity不处于栈顶，但是仍然可见时
+        3)停止状态：Activity不处于栈顶，完全不可见时
+        4)销毁状态：Activity从返回栈移除后，就变成了销毁状态（系统最倾向于回收这种状态的Activity,以保证手机的内存充足）
+
+    生命周期:
+        onCreate:Activity第一次创建时调用，可以做加载布局、初始化资源的操作
+        onStart:Activity由不可见变为可见时候调用
+        onResume:Activity准备好用户进行交互的时候调用，处于栈顶，并且处于运行状态
+        onPause:准备去启动或者恢复另一个Activity的时候调用
+        onStop:Activity完全不可见的时候调用
+        onDestroy:Activity被销毁之前调用，调用之后Activity状态变为销毁状态
+        onRestart:Activity由停止状态变为运行状态之前调用，也就是Activity被重新启动了。
+
+    生存期：
+        完整生存期：onCreate~onDestroy方法之间所经历的就是完整生存期
+        可见生存期：onStart~onStop方法之间所经历的就是可见生存期
+        前台生存期：onResume和onPause方法之间所经历的就是前台生存期
+
+    页面跳转：
+        // 只进行跳转操作
+        startActivity(Intent(this,DemoActivity::class.java)
+
+        // 跳转并接收回调数据
+        val activityZoneIntent = Intent(this, FirstActivity::class.java)
+            val testData2 = "TestData2"
+            val demoData:DemoClass
+            val bundle = Bundle().apply {
+                putParcelable("total_data", DemoClass::java.class)
+                putString("sort_data", testData2)
+                putInt("sort_name", 1)
+            }
+        activityZoneIntent.putExtra("bundle", bundle)
+
+        val startActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            接收回调回来的数据，并进行处理
+        }
+        startActivity.launch(activityZoneIntent)
+
+    数据传递与获取:
+        传递:
+        val data = "Test data"
+        startActivity(Intent(this,FirstActivity::class.java).apply {
+            putExtra("data_key",data)
+        })
+        获取:
+        val extraData = intent.getStringExtra("data_key")
+
+    返回栈:
+        Android是使用任务来管理Activity的，一个任务就是一组存放在栈里的Activity的集合，这个栈也被称作任务栈。
+        栈是一种后进先出的数据结构，在默认情况下，每当我们启动了一个新的Activity,他就会在返回栈中入栈，并处于栈顶的位置。
+        每当我们按下back键或调用finish方法去销毁一个Activity时，处于栈顶的Activity就会出战，前一个入栈的Activity就会重新处于栈顶的位置。
+        系统总是会显示处于栈顶的Activity给用户。
+
+    数据被回收:
+        Activity中提供了一个onSaveInstanceState回调方法，这个方法保证在Activity被回收之前一定会被调用。
+        onSaveInstanceState方法会携带一个Bundle类型的参数，Bundle提供了一系列的方法用于保存数据(键值对的方式)
+
+        具体使用：onSaveInstanceState方法中进行数据保存，onCreate方法中进行数据恢复
+        override fun onSaveInstanceState(outState:Bundle?){
+            super.onSaveInstanceState(outState)
+            val tempData = "Something you just typed"
+            outState.putString("data_key",tempData)
+        }
+
+        override fun onCreate(savedInstanceState:Bundle?){
+            if (savedInstanceState != null) {
+                val tempData = savedInstanceState.getString("data_key")
+            }
+        }
+
+    启动模式:
+        standard:Activity的默认启动模式，每当启动一个新的Activity，无论此Activity是否在返回栈中，它都会创建一个该Activity的新实例，在返回栈中入栈，并处于栈顶的位置。
+        singleTop:在启动新Activity的时候，会先检查返回栈的栈顶是否是当前Activity，如果是则直接使用，如果不是再去创建一个新的Activity实例，并将其放入返回栈，置于栈顶
+        singleTask:在启动新Activity的时候，首先去返回栈中检查是否存在当前Activity的实例，如存在则直接使用，并把这个Activity之上所有其它Activity统统出栈，如果没有则重新创建一个实例，置于栈顶。
+        singleInstance:表示Activity会启用一个新的返回栈来管理当前Activity
+
+        声明方式：AndroidManifest--->application--->Activity---> android:launchMode="singleInstance"
+
+    退出:
+        退出当前Activity-----> finish()
+        退出程序：
+            思路:所有Activity都继承BaseActivity，然后在BaseActivity的onCreate方法中，将activity加入到集合中，在退出程序的地方，remove掉集合中所有的activity
+        代码实现：
+            工具类：
+            object ActivityCollector{
+                private val activities = ArrayList<Activity>
+                fun addActivity(activity:Activity){activities.add(activity)}
+                fun removeActivity(activity:Activity){activities.remove(activity)}
+                fun finishAll(){
+                    for(activity in activities){
+                        if(!activity.isFinishing){
+                            activity.finish(
+                        }
+                    }
+                    activities.clear()
+                }
+            }
+
+            // BaseActivity
+            open class BaseActivity:AppCompatActivity(){
+                override fun onCreate(saveInstanceState:Bundle?){
+                    super.onCreate(saveInstanceState)
+                    ActivityCollector.addActivity(this)
+                }
+
+                override fun onDestroy(){
+                    super.onDestroy()
+                    ActivityCollector.removeActivity(this)
+                }
+            }
+
+            // 程序退出(销毁所有Activity后在杀掉当前进程，保证程序完全退出)
+            备注：killProcess方法用于杀掉一个进程，它接收一个进程id参数，我们通过myPid方法获得当前程序的进程id，killProcess只能用于杀掉当前程序的进程，不能用于杀掉其它程序
+            ActivityCollector.finishAll()
+            android.os.Process.killProcess(android.os.Process.myPid())
+
+6.
