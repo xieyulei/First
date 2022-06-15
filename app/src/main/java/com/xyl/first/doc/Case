@@ -1,0 +1,6 @@
+1.构建Intent对象，进行页面跳转
+val intent = Intent(context,SecondActivity::class.java).apply{
+    putExtra("param1","data1")
+    putExtra("param2","data2")
+}
+context.startActivity(intent)

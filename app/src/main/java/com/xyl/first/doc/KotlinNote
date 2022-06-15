@@ -32,6 +32,25 @@
         示例(过滤机集合中元素长度大于5的数据，并将其全部转为大写)：val newList = list.filter{ it.length > 5 }.map{ it.toUpperCase()}
     any:用于判断集合中是否至少存在一个元素满足指定条件
     all：用于判断集合中是否所有元素都满足指定条件
+    with:可以连续调用同一个对象的多个方法事代码变得更加精简，有两个参数，第一个参数是任意类型的对象，第二个是Lambda表达式，Lambda表达式的最好一行会作为with函数的返回值返回
+        示例:val str = with(StringBuilder()){
+                append("A")
+                append("B")
+                toString()
+            }
+    run:使用场景和with类似，但是run不能直接调用，一定要调用某个对象的run函数才行，其次run函数只接收一个Lambda参数，并且会在Lambda表达式中提供调用对象的上下文
+        示例：val result = StringBuilder().run {
+                append("A")
+                append("B")
+                toString()
+            }
+    apply:与run类似，也是需要在某个对象上调用，并且只接收一个Lambda参数，也会在Lambda表达式中提供调用对象的上下文，但是apply无法指定返回值，而是会自动返回调用对象本身
+        示例代码：val result = StringBuilder().apply {
+                    append("A")
+                    append("B")
+                }
+                // result 为StringBuilder对象本身，所以要打印字符串需要toString()s
+                println(result.toString)
 
 4.面向对象的基本思想
     基本思想：通过对类的封装，在合适的时机创建该类的对象，然后调用对象中的字段和函数来满足实际编程的需求
@@ -77,3 +96,15 @@
                 方法：fun printParams(num:Int = 0,str:String="hello"){ println("num is $num , str is $str") }
                 调用方法：printParams(str = "kotlin")
 
+10.单例类
+    静态方法：也叫做类方法，指的就是那种不需要创建实例就能调用的方法，所有主流的编程语言都会支持静态方法这个特性。
+    kotlin中的单例类，类似于Java中的静态方法，Java中定义静态方法使用static关键字，kotlin则使用单例类的方式。
+
+    单例类须知：
+        Kotlin中的单例类会将整个类中所有的方法全部变成类似于静态方法的调用方式;
+        如果不想使用单例类，但是想让类中的某一个方法或者变量变成静态的，可以使用companion object关键字；
+        如果确实要定义真正的静态方法，那就在方法或者变量上方加上@JvmStatic(注意：@JvmStatic只能加在但李磊或者companion object中的方法上)
+
+11.顶层方法
+    顶层方法：指的是那些没有定义在任何类中的方法，Kotlin会将所有的顶层方法全部编译成静态方法。
+    定义顶层方法：New--->Kotlin--->File/Class,在弹出的对话框中输入文件名即可(类型要选择File)
