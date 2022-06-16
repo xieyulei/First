@@ -4,3 +4,19 @@ val intent = Intent(context,SecondActivity::class.java).apply{
     putExtra("param2","data2")
 }
 context.startActivity(intent)
+
+2.启动Activity的最佳写法
+例如：MainActivity跳转到FirstActivity，并传递过去一个字符串和一个数值
+第一步：FirstActivity定义跳转的模拟静态方法
+    class FirstActivity {
+        companion object {
+            fun actionStart(context:Context,name:String,age:Int){
+                val intent = Intent(context,SecondActivity::class.java).apply{
+                    putExtra("param1","data1")
+                    putExtra("param2","data2")
+                }
+                context.startActivity(intent)
+            }
+        }
+    }
+第二步：MainActivity的点击事件中调用：SecondActivity.actionStart(this,"yasuo",3)

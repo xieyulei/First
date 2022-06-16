@@ -24,8 +24,9 @@
         这种class文件只有java虚拟机才能识别，而这个java虚拟机担当的就是解释器的角色，它会在程序运行时将编译后的class文件解释成计算机可识别的二进制数据
         后再执行，因此，准确来讲，java属于解释型语言。
 
-4.四大组件
-    Activity：是一种包含用户界面的组件，主要用于和用户进行交互。
+4.五大组件
+    Activity:是一种包含用户界面的组件，主要用于和用户进行交互。
+    Fragment:Fragment是一种可以嵌入在Activity当中的UI片段
 
 5.Activity的状态、生命周期、生存期、跳转、数据传递、返回栈、数据被回收、启动模式、退出
     状态：每个Activity在生命周期中最多可能有4种状态
@@ -146,4 +147,62 @@
             ActivityCollector.finishAll()
             android.os.Process.killProcess(android.os.Process.myPid())
 
-6.
+6.UI控件的常见属性
+    android:gravity ---> 文字在控件中的对齐方式
+    android:layout_gravity ---> 控件在布局中的对齐方式
+    LinearLayout的默认排列方向是：horizontal,即水平方向
+    android:layout_weight ---> 指定控件的宽度或者高度的比例，一般配合宽/高0dp使用
+    android:layout_above ---> 当前控件位于目标控件的上方，例如：android:layout_above="@id/button1",即当前控件位于button1的上方
+    android:layout_below ---> 当前控件位于目标控件的下方，例如：android:layout_below="@id/button1",即当前控件位于button1的下方
+    android:layout_alignLeft ---> 当前控件与目标控件的左边缘对齐
+    android:layout_alignParentLeft ---> 当前控件与父布局的左边缘对齐
+    android:maxLines --->表示控件的文本最大显示行数
+    android:ellipsize --->表示当文本超出控件宽度时，文本的缩略方式，例如尾部缩略：android:ellipsize="end"
+
+7. LayoutInflate.inflate方法中有三个参数：resourceId,parent,attachToRoot
+    resourceId:布局文件资源id
+    parent:表示View的根节点
+    attachToRoot:false则表示只会将布局转换成对应的View，不会添加到我们传进来的root节点中，true则表示会将布局转换的view添加到root节点中去，相当于addView
+
+8.RecyclerView的基本使用
+    自定义Adapter需要继承RecyclerView.Adapter
+    onCreateViewHolder:用于创建ViewHolder实例，在这个方法中加载item布局，创建ViewHolder实例，并把加载出来的布局传入ViewHolder类的构造函数中
+    onBindViewHolder:用于给RecyclerView的子项数据进行赋值，会在每个子项被滚到屏幕内的时候执行，这里通过position来获取item数据，将其设置到ViewHolder中的子项控件中
+    getItemCount:返回数据源的长度，也就是item的数量
+    item点击事件:可以在onCreateViewHolder方法中进行点击事件的注册，数据通过position来获得
+        例如：
+            1)整个item的点击事件viewHolder.itemView.setOnClickListener{ }
+            2)item中子控件的点击事件viewHolder.text.setOnClickListener{ }
+    adapter.notifyItemInserted(position)：在指定位置插入item
+    adapter.scrollToPosition(position)：定位到列表中position的位置
+
+9.Fragment
+    定义:Fragment是一种可以嵌入在Activity当中的UI片段，它能让程序更加合理和充分地利用大屏幕的空间，因而在平板上应用的非常广泛。
+    布局加载:onCreateView方法中，inflater.inflate(R.layout.fragment_demo,container,false)
+    静态加载：xml中使用fragment标签，使用name属性指定fragment的全路径
+    动态替换：创建Fragment实例-->调用getSupportFragmentManager-->开启事务beginTransaction-->向容器添加或者替换fragment(add/replace,传入容器id和实例)-->提交事务(commit)
+    生命周期：
+        四种状态：运行、暂停、停止、销毁
+        周期方法：大致与Activity相同，但是还有几个不同的地方，如下：
+            onAttach：当Fragment与Activity建立关联时调用
+            onCreateView:为Fragment创建视图(加载布局)时调用
+            onActivityCreate：确保与Fragment相关联的Activity已经创建完毕时调用
+            onDestroyView:当与Fragment关联的视图被移除时调用
+            onDetach:当Fragment和Activity接触关联时调用
+        周期方法执行顺序：onAttach--->onCreate--->onCreateView--->onActivityCreated--->onStart--->onResume--->onPause--->onStop--->onDestroyView--->onDestroy--->onDetach
+
+    返回栈:事务中添加返回栈--->addToBackStack
+        示例代码：val fragmentManager = supportFragmentManager
+                val transaction = fragmentManager.beginTransaction()
+                transaction.replace(R.id.frame_layout,fragment)
+                transaction.addToBackStack(null)
+                transaction.commit()
+    Fragment的
+
+10.资源限定符
+    使用限定符，可以使程序能够根据设备的分辨率、屏幕大小，在运行时决定加载哪个图片资源、布局，进行适配
+    大小限定符:small(小屏幕)、normal(中等屏幕)、large(大屏幕)、xlarge(超大屏幕)
+    分辨率限定符:ldpi(低分辨率)、mdpi(中分辨率)、hdpi(高分辨率)、xhdpi(超高分辨率)、xxhdpi(超超高分辨率)
+    方向限定符：land(提供给横屏设备的资源)、port(提供给竖屏设备的资源)
+    最小宽度限定符:large限定符没有一个明确的数值，当希望可以更加灵活的为不同设备加载布局，不管是否被认定为large，这时就可以使用最小宽度限定符
+        示例：res--->layout-sw600dp文件夹，在这个文件夹下新建activity_main.xml布局，意味当程序运行在屏幕宽度大于等于600dp的设备商，会加载layout-sw600dp文件夹中的布局文件

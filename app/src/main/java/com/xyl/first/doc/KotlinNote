@@ -52,6 +52,12 @@
                 // result 为StringBuilder对象本身，所以要打印字符串需要toString()s
                 println(result.toString)
 
+    repeat:允许传入一个数值n，然后会把后边Lambda表达式中的内容执行n遍，
+        示例代码：打印8遍字符串Kotlin
+                repeat(8){
+                    System.out.println("Kotlin")
+                }
+
 4.面向对象的基本思想
     基本思想：通过对类的封装，在合适的时机创建该类的对象，然后调用对象中的字段和函数来满足实际编程的需求
     特性：例如封装、继承、多态等
@@ -62,12 +68,15 @@
     open:用来修改类，表示当前类可被继承
     data:表明当前类是数据类(省略了equals、hashCode、toString方法)
     object:声明单例类，例如：object SingleTon {}
+    const:声明常量，只能在单例类、companion object或顶层方法中才可以使用
+    sealed class:密封类
 
 6.访问权限修饰符
     public:对所有类可见，kotlin默认修饰符
     private:对当前类内部可见
     protected:对当前类和子类可见
     internal:只对同一模块中的类可见（kotlin特有）
+    lateinit：对当前变量延迟初始化(即：告知Kotlin编译器，晚些会对此变量进行初始化，一开始声明时就无需赋值为null了)
 
 7.List和Set的区别
     List可以允许重复的对象，Set不允许有重复的对象
@@ -108,3 +117,16 @@
 11.顶层方法
     顶层方法：指的是那些没有定义在任何类中的方法，Kotlin会将所有的顶层方法全部编译成静态方法。
     定义顶层方法：New--->Kotlin--->File/Class,在弹出的对话框中输入文件名即可(类型要选择File)
+
+12.变量延迟初始化和密封类
+    变量延迟初始化:
+        使用场景：类中存在很多全局变量，明知确定不为空，但是按照Kotlin的空指针判断语法标准，需要做大量的非空判断保护
+        如何使用：lateinit关键字
+        存在的风险：变量延迟初始化后，还没有进行初始化操作之前，调用变量，就会抛出异常--UninitializedPropertyAccessException
+        规避措施：通过代码来判断一个全局变量是否已经完成了初始化，这样可以避免在某些时候有效的避免重复对某一个变量进行初始化操作
+            示例代码：if(!::adapter.isInitialized){
+                        adapter = MsgAdapter(msgList)
+                    }
+    密封类:
+        密封类及其所有子类只能定义在同一个文件的顶层位置，不能嵌套在其他类中，这是密封类的实现机制所限制的
+        作用：去除多余的else分支处理
