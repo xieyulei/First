@@ -57,6 +57,8 @@
                 repeat(8){
                     System.out.println("Kotlin")
                 }
+    String.reverse:反转字符串
+    String.capitalize:字符串的首字母大写
 
 4.面向对象的基本思想
     基本思想：通过对类的封装，在合适的时机创建该类的对象，然后调用对象中的字段和函数来满足实际编程的需求
@@ -77,6 +79,7 @@
     protected:对当前类和子类可见
     internal:只对同一模块中的类可见（kotlin特有）
     lateinit：对当前变量延迟初始化(即：告知Kotlin编译器，晚些会对此变量进行初始化，一开始声明时就无需赋值为null了)
+    operator:运算符重载
 
 7.List和Set的区别
     List可以允许重复的对象，Set不允许有重复的对象
@@ -130,3 +133,55 @@
     密封类:
         密封类及其所有子类只能定义在同一个文件的顶层位置，不能嵌套在其他类中，这是密封类的实现机制所限制的
         作用：去除多余的else分支处理
+
+13.扩展函数与运算符重载
+    扩展函数
+        定义：表示即使在不修改某个类的源码的情况下，仍然可以打开这个类，向该类添加新的函数
+        须知：扩展函数可以定义在任意一个 现有类当中，不一定要创建新文件，不过通常将其定义成顶层方法，可以让扩展函数拥有全局的访问域.
+        使用：相对于定义普通函数，定义扩展函数只需要在函数名前面加上一个ClassName.的语法结构，就表示将该函数添加到指定类当中.
+        示例代码：给String类中添加扩展函数----函数的功能：返回字符串中字母的数量
+            第一步：创建Kotlin-->File-->String.kt
+            第二步：声明方法
+            fun String.lettersCount(): Int {
+                var count = 0
+                for (char in this) {
+                    if (char.isLetter()) {
+                        count++
+                    }
+                }
+                return count
+            }
+            第三步：调用
+            val count = "ABC123%$!*@".lettersCount()
+
+    运算符重载:
+        常见语法糖表达式 和 实际调用函数如下：
+        a+b ---> a.plus(b)
+        a-b ---> a.minus(b)
+        a*b ---> a.times(b)
+        a/b ---> a.div(b)
+        a%b ---> a.rem(b)
+        a++ ---> a.inc()
+        a-- ---> a.dec()
+        +a ---> a.unaryPlus()
+        -a ---> a.unaryMinus()
+        !a ---> a.not()
+        a==b ---> a.equals(b)
+        a>=b ---> a.compareTo(b)
+        a..b ---> a.rangeTo(b)
+        a[b] ---> a.get(b)
+        a[b] = c ---> a.set(b,c)
+        a in b ---> b.contains(a)，即：b是否包含在a之中，顺序相反
+
+        示例：重载运算符+，功能---两个对象相加返回一个对象
+        代码如下：
+        class Money(val value:Int){
+            operator fun plus(money:Money):Money{
+                val sum = value + money.value
+                return Money(sum)
+            }
+        }
+        调用：
+        val money1 = Money(5)
+        val money2 = Money(20)
+        val money3 = money1 + money2
