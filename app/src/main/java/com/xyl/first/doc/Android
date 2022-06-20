@@ -207,11 +207,14 @@
         示例：res--->layout-sw600dp文件夹，在这个文件夹下新建activity_main.xml布局，意味当程序运行在屏幕宽度大于等于600dp的设备商，会加载layout-sw600dp文件夹中的布局文件
 
 11.四大组件--BroadcastReceiver之广播接收者
-    定义：一种广播消息机制，可以监听自身应用的广播消息，也可以监听到其他应用程序的广播
+    定义：广播，是一个全局监听器，属于Android四大组件
+    作用：一种广播消息机制，可以监听自身应用的广播消息，也可以监听到其他应用程序的广播
+    应用场景：应用内或者不同应用之间通信；多线程通信，与Android系统在特定情况下通信
     广播的类型:标准广播(完全异步，同时收到)、有序广播(同步执行，同一时刻只会有一个接收器接收广播消息，优先级高先收到，前面的接收器可以截断正在传递的广播)
     系统广播列表源码位置：Android SDK--->platforms/<任意api版本>/data/broadcast_actions.txt
     广播的注册方式:静态注册(AndroidManifest中注册组件)和动态注册(代码创建广播接收器)
-        动态注册：1)创建接收器类，继承自BroadcastReceiver,重写onReceive方法，有广播时，onReceive方法就会得到执行
+        动态注册：动态广播最好在Activity的onResume中注册，onPause中注销，有注册就必须有注销，否则会导致内存泄漏（不能重复注册、注销）
+                1)创建接收器类，继承自BroadcastReceiver,重写onReceive方法，有广播时，onReceive方法就会得到执行
                     inner class TimeChangeReceiver:BroadcastReceiver(){
                         override fun onReceive(context:Context,intent:Intent){
                             Toast.makeText(context,"Time is changed",Toast.LENGTH_SHORT).show()
@@ -234,3 +237,28 @@
         动态注册和静态注册的优缺点：
             动态注册：优点是灵活控制和注销，缺点是必须在程序启动之后才能接收广播，且必须在Activity结束前，手动取消注册，不然会导致内存泄漏
             静态注册：优点是不受生命周期影响，APP关闭也能接收到广播，缺点是常驻会更加耗费CPU,电量等资源
+    发送广播：
+        标准广播：
+            val intent = Intent("com.xyl.broadcast.MY_BROADCAST")
+            intent.setPackage(packageName)
+            sendBroadcast(intent)
+        有序广播:
+            val intent = Intent("com.xyl.broadcast.MY_BROADCAST")
+            intent.setPackage(packageName)
+            sendOrderedBroadcast(intent,null)
+
+    截断广播：abortBroadcast()
+    广播原理：
+        广播接收者通过Binder机制在AMS注册
+        广播发送者通过Binder机制向AMS发送广播
+        AMS根据广播发送者要求，在已注册列表中，寻找合适的广播接收者（IntentFilter/Permission）
+        AMS将广播发送到合适的广播接收者相应的消息循环队列中
+        广播接收者通过消息循环拿到此广播，并回调onReceive方法
+
+    不同注册方式的广播接收器回调onReceive方法的context返回值是不一样的,如下：
+        静态注册：context返回值是ReceiverRestrictedContext
+        全局广播的动态注册：context返回值是Activity
+        应用内广播（LocalManager）的动态注册：context返回值是Application
+        应用内的广播的动态注册(非LocalManager)：context返回值是Activity
+
+
